@@ -1,6 +1,13 @@
 package com.fylmr.demo.revolut.api.entities
 
-data class LatestCurrenciesPrice(
+import com.fylmr.demo.revolut.data.entities.Currency
+import com.google.gson.JsonDeserializationContext
+import com.google.gson.JsonDeserializer
+import com.google.gson.JsonElement
+import com.google.gson.JsonParseException
+import java.lang.reflect.Type
+
+data class LatestCurrenciesPrices(
         private val base: String,
         private val date: String,
         private val rates: Rates
@@ -40,3 +47,32 @@ data class Rates(
         private val USD: Double,
         private val ZAR: Double
 )
+
+class LatestCurrenciesPricesDeserializer : JsonDeserializer<LatestCurrenciesPrices> {
+    override fun deserialize(
+            json: JsonElement?,
+            typeOfT: Type?,
+            context: JsonDeserializationContext?
+    ): List<Currency> {
+
+        val rates = json?.asJsonObject?.get("rates")?.asJsonObject
+                ?: throw JsonParseException("Couldn't parse Currency from JSON: $json")
+        return listOf(
+                rates["AUD"],
+                rates["BGN"],
+                rates["BRL"],
+                rates["CAD"],
+                rates["CHF"],
+                rates["CNY"],
+                rates["CZK"],
+                rates["DKK"],
+                rates["GBP"],
+                rates["HKD"],
+                rates["HRK"],
+                rates["HUF"]
+,        TODO()
+
+        )
+
+    }
+}

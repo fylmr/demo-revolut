@@ -5,9 +5,10 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.fylmr.demo.revolut.data.entities.Currency
 import com.fylmr.demo.revolut.ui.fragments.currencies.adapter.CurrenciesDiffUtil
+import org.koin.core.KoinComponent
 
 @InjectViewState
-class CurrenciesPresenter : MvpPresenter<CurrenciesView>() {
+class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), KoinComponent {
 
     private val currencies = mutableListOf<Currency>()
 
