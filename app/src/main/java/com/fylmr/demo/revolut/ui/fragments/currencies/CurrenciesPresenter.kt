@@ -6,6 +6,7 @@ import com.arellomobile.mvp.InjectViewState
 import com.arellomobile.mvp.MvpPresenter
 import com.fylmr.demo.revolut.data.CurrenciesRepository
 import com.fylmr.demo.revolut.data.entities.Currency
+import com.fylmr.demo.revolut.ui.fragments.currencies.adapter.CurrenciesAdapterPresenter
 import com.fylmr.demo.revolut.ui.fragments.currencies.adapter.CurrenciesDiffUtil
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
@@ -13,13 +14,21 @@ import org.koin.core.KoinComponent
 import org.koin.core.inject
 
 @InjectViewState
-class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), KoinComponent {
+class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPresenter, KoinComponent {
+
+    companion object {
+        private const val TAG = "CurrenciesPresenter"
+    }
 
     private val repo: CurrenciesRepository by inject()
 
     private val currencies = mutableListOf<Currency>()
 
     private val compositeDisposable = CompositeDisposable()
+
+    // ===================================================
+    // Lifecycle
+    // ===================================================
 
     override fun onFirstViewAttach() {
         super.onFirstViewAttach()
@@ -29,18 +38,47 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), KoinComponent {
 
     override fun onDestroy() {
         super.onDestroy()
+
         compositeDisposable.dispose()
     }
+
+    // ===================================================
+    // Public
+    // ===================================================
 
     fun getCurrencies(): List<Currency> {
         return currencies
     }
 
+    // ===================================================
+    // CurrenciesAdapterPresenter
+    // ===================================================
+
+    override fun onEdited(position: Int, newValue: String) {
+        Log.d(TAG, "pos: $position, newValue: $newValue")
+
+        if (currencies[position].isActive == 1)
+            return
+
+        clearActiveStatus()
+
+        val newCurrencies = currencies.toMutableList()
+        newCurrencies[position].isActive = 1
+        newCurrencies.sortedBy { it.isActive }
+
+        showCurrencies(newCurrencies)
+    }
+
+    // ===================================================
+    // Private
+    // ===================================================
+
     private fun startCurrencyListener() {
         val d = repo.getRelativeToEuro()
                 .observeOn(AndroidSchedulers.mainThread())
+                .doOnNext { Log.v(TAG, "Currencies updated") }
                 .subscribe(::showCurrencies) {
-                    Log.e("CurrenciesPresenter", "getRelativeToEuro error", it)
+                    Log.e(TAG, "getRelativeToEuro error", it)
                 }
 
         compositeDisposable.add(d)
@@ -53,5 +91,11 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), KoinComponent {
         currencies.addAll(newCurrencies)
 
         viewState.showCurrenciesDifference(diffResult)
+    }
+
+    private fun clearActiveStatus() {
+        currencies
+                .filter { it.isActive != 0 }
+                .forEach { it.isActive = 0 }
     }
 }

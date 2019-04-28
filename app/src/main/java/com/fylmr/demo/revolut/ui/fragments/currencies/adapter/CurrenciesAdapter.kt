@@ -7,15 +7,19 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.fylmr.demo.revolut.R
 import com.fylmr.demo.revolut.data.entities.Currency
+import com.fylmr.demo.revolut.utils.onEditTextChanged
 
 class CurrenciesAdapter(
-        private val currencies: List<Currency>
+        private val currencies: List<Currency>,
+        private val presenter: CurrenciesAdapterPresenter
 ) : RecyclerView.Adapter<CurrenciesAdapter.ViewHolder>() {
 
     override fun getItemCount(): Int = currencies.size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
-        val view = LayoutInflater.from(parent.context).inflate(R.layout.item_currency, parent, false)
+        val view = LayoutInflater
+                .from(parent.context)
+                .inflate(R.layout.item_currency, parent, false)
         return ViewHolder(view)
     }
 
@@ -23,12 +27,22 @@ class CurrenciesAdapter(
         val currency = currencies[position]
 
         holder.title.text = currency.code
+
         holder.value.text = currency.price.toString()
+        holder.value.addTextChangedListener(onEditTextChanged {
+            presenter.onEdited(position, it)
+        })
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
         val title: TextView = v.findViewById(R.id.tv_currency_title)
         val value: TextView = v.findViewById(R.id.tv_currency_value)
     }
+
+}
+
+interface CurrenciesAdapterPresenter {
+
+    fun onEdited(position: Int, newValue: String)
 
 }

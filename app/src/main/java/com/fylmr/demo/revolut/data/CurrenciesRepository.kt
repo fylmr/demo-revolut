@@ -3,12 +3,13 @@ package com.fylmr.demo.revolut.data
 import com.fylmr.demo.revolut.api.CurrenciesService
 import com.fylmr.demo.revolut.api.entities.LatestCurrenciesPrices
 import com.fylmr.demo.revolut.data.entities.Currency
-import io.reactivex.Single
+import io.reactivex.Observable
 import org.koin.core.KoinComponent
+import java.util.concurrent.TimeUnit
 
 interface CurrenciesRepository {
 
-    fun getRelativeToEuro(): Single<List<Currency>>
+    fun getRelativeToEuro(updateSeconds: Long = 1): Observable<List<Currency>>
 
 }
 
@@ -20,8 +21,9 @@ class CurrenciesRepositoryImpl(
         private const val euroCode = "EUR"
     }
 
-    override fun getRelativeToEuro(): Single<List<Currency>> {
-        return service.getLatest(euroCode)
+    override fun getRelativeToEuro(updateSeconds: Long): Observable<List<Currency>> {
+        return Observable.interval(updateSeconds, TimeUnit.SECONDS)
+                .flatMapSingle { service.getLatest(euroCode) }
                 .map(::mapLatestCurrencies)
     }
 
