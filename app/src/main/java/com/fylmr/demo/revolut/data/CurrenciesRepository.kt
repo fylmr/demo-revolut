@@ -26,6 +26,12 @@ class CurrenciesRepositoryImpl(
     }
 
     private fun mapLatestCurrencies(response: LatestCurrenciesPrices): List<Currency> {
-        TODO()
+        return response.rates::class.java.declaredFields.map {
+            it.isAccessible = true
+
+            val price = it.get(response.rates) as Double
+
+            Currency(it.name, price)
+        }
     }
 }

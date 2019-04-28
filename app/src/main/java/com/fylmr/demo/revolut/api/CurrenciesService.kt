@@ -1,12 +1,13 @@
 package com.fylmr.demo.revolut.api
 
-import com.fylmr.demo.revolut.data.entities.Currency
+import com.fylmr.demo.revolut.api.entities.LatestCurrenciesPrices
 import io.reactivex.Single
 import retrofit2.http.GET
+import retrofit2.http.Query
 
 interface CurrenciesService {
 
-    @GET("latest?base={base}")
-    fun getLatest(base: String): Single<List<Currency>>
+    @GET("latest")
+    fun getLatest(@Query("base") base: String): Single<LatestCurrenciesPrices>
 
 }
