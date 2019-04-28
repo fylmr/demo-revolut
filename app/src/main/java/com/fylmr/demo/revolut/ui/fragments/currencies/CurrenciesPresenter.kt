@@ -55,16 +55,22 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
     // ===================================================
 
     override fun onEdited(position: Int, newValue: String) {
-        Log.d(TAG, "pos: $position, newValue: $newValue")
+        Log.d(TAG, "onEdited() pos: $position, newValue: $newValue")
 
+        // todo updates without user actions
+    }
+
+    override fun onClicked(position: Int) {
         if (currencies[position].isActive == 1)
             return
+
+        Log.d(TAG, "onClicked() pos: $position")
 
         clearActiveStatus()
 
         val newCurrencies = currencies.toMutableList()
         newCurrencies[position].isActive = 1
-        newCurrencies.sortedBy { it.isActive }
+        newCurrencies.sortWith(Comparator { c1, c2 -> c2.isActive - c1.isActive })
 
         showCurrencies(newCurrencies)
     }
@@ -77,9 +83,8 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
         val d = repo.getRelativeToEuro()
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { Log.v(TAG, "Currencies updated") }
-                .subscribe(::showCurrencies) {
-                    Log.e(TAG, "getRelativeToEuro error", it)
-                }
+                .doOnError { Log.e(TAG, "getRelativeToEuro error", it) }
+                .subscribe(::showCurrencies)
 
         compositeDisposable.add(d)
     }

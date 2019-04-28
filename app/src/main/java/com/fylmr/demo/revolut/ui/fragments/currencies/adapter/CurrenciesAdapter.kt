@@ -32,6 +32,8 @@ class CurrenciesAdapter(
         holder.value.addTextChangedListener(onEditTextChanged {
             presenter.onEdited(position, it)
         })
+
+        holder.itemView.setOnClickListener { presenter.onClicked(position) }
     }
 
     class ViewHolder(v: View) : RecyclerView.ViewHolder(v) {
@@ -44,5 +46,7 @@ class CurrenciesAdapter(
 interface CurrenciesAdapterPresenter {
 
     fun onEdited(position: Int, newValue: String)
+
+    fun onClicked(position: Int)
 
 }
