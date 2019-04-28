@@ -10,11 +10,10 @@ import com.fylmr.demo.revolut.data.entities.Currency
 import com.fylmr.demo.revolut.utils.onEditTextChanged
 
 class CurrenciesAdapter(
-        private val currencies: List<Currency>,
         private val presenter: CurrenciesAdapterPresenter
 ) : RecyclerView.Adapter<CurrenciesAdapter.ViewHolder>() {
 
-    override fun getItemCount(): Int = currencies.size
+    override fun getItemCount(): Int = presenter.getCurrencies().size
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater
@@ -24,7 +23,7 @@ class CurrenciesAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val currency = currencies[position]
+        val currency = presenter.getCurrencies()[position]
 
         holder.title.text = currency.code
 
@@ -44,6 +43,8 @@ class CurrenciesAdapter(
 }
 
 interface CurrenciesAdapterPresenter {
+
+    fun getCurrencies(): List<Currency>
 
     fun onEdited(position: Int, newValue: String)
 

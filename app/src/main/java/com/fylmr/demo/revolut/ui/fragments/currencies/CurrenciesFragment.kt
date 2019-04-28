@@ -32,7 +32,7 @@ class CurrenciesFragment : MvpAppCompatFragment(), CurrenciesView {
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
 
-        adapter = CurrenciesAdapter(presenter.getCurrencies(), presenter)
+        adapter = CurrenciesAdapter(presenter)
         rvCurrencies = rv_currencies
         rvCurrencies.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCurrencies.adapter = adapter

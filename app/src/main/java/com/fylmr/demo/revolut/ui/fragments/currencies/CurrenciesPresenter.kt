@@ -43,16 +43,12 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
     }
 
     // ===================================================
-    // Public
-    // ===================================================
-
-    fun getCurrencies(): List<Currency> {
-        return currencies
-    }
-
-    // ===================================================
     // CurrenciesAdapterPresenter
     // ===================================================
+
+    override fun getCurrencies(): List<Currency> {
+        return currencies
+    }
 
     override fun onEdited(position: Int, newValue: String) {
         Log.d(TAG, "onEdited() pos: $position, newValue: $newValue")
@@ -70,9 +66,8 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
 
         val newCurrencies = currencies.toMutableList()
         newCurrencies[position].isActive = 1
-        newCurrencies.sortWith(Comparator { c1, c2 -> c2.isActive - c1.isActive })
 
-        showCurrencies(newCurrencies)
+        showCurrencies(newCurrencies.sorted())
 
         viewState.scrollToTop()
     }
@@ -93,6 +88,7 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
                         Currency(c.code, c.price, currentStatus)
                     }
                 }
+                .map { it.sorted() }
                 .subscribe(::showCurrencies)
 
         compositeDisposable.add(d)
@@ -111,5 +107,9 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
         currencies
                 .filter { it.isActive != 0 }
                 .forEach { it.isActive = 0 }
+    }
+
+    private fun List<Currency>.sorted(): List<Currency> {
+        return sortedWith(Comparator { c1, c2 -> c2.isActive - c1.isActive })
     }
 }
