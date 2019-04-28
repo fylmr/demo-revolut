@@ -45,4 +45,8 @@ class CurrenciesFragment : MvpAppCompatFragment(), CurrenciesView {
     override fun showCurrenciesDifference(diffResult: DiffUtil.DiffResult) {
         diffResult.dispatchUpdatesTo(adapter)
     }
+
+    override fun scrollToTop() {
+        rvCurrencies.scrollToPosition(0)
+    }
 }

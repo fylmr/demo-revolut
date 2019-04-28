@@ -73,6 +73,8 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
         newCurrencies.sortWith(Comparator { c1, c2 -> c2.isActive - c1.isActive })
 
         showCurrencies(newCurrencies)
+
+        viewState.scrollToTop()
     }
 
     // ===================================================
@@ -84,6 +86,13 @@ class CurrenciesPresenter : MvpPresenter<CurrenciesView>(), CurrenciesAdapterPre
                 .observeOn(AndroidSchedulers.mainThread())
                 .doOnNext { Log.v(TAG, "Currencies updated") }
                 .doOnError { Log.e(TAG, "getRelativeToEuro error", it) }
+                .map { list ->
+                    list.map m@{ c ->
+                        val currentStatus = currencies.find { it.code == c.code }?.isActive
+                                ?: return@m c
+                        Currency(c.code, c.price, currentStatus)
+                    }
+                }
                 .subscribe(::showCurrencies)
 
         compositeDisposable.add(d)

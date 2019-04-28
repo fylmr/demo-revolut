@@ -7,4 +7,6 @@ interface CurrenciesView : MvpView {
 
     fun showCurrenciesDifference(diffResult: DiffUtil.DiffResult)
 
+    fun scrollToTop()
+
 }
