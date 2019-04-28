@@ -1,6 +1,9 @@
 package com.fylmr.demo.revolut.data.entities
 
+import androidx.annotation.IntRange
+
 data class Currency(
-        private val code: String,
-        private val price: Double
+        val code: String,
+        val price: Double,
+        @IntRange(from = 0, to = 1) val isActive: Int = 0
 )
